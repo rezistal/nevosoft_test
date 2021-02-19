@@ -1,10 +1,13 @@
 #pragma once
 
 #include "ofMain.h"
+#include "Particle.h"
 
 class ofApp : public ofBaseApp{
 
 	public:
+		ofVec2f gravity;
+
 		void setup();
 		void update();
 		void draw();
