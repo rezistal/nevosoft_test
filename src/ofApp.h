@@ -2,11 +2,13 @@
 
 #include "ofMain.h"
 #include "Particle.h"
+#include "Firework.h"
 
 class ofApp : public ofBaseApp{
 
 	public:
 		ofVec2f gravity;
+		vector<Firework> fireworks;
 
 		void setup();
 		void update();

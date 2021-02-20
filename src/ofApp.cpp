@@ -1,28 +1,41 @@
 #include "ofApp.h"
 #include "Particle.h"
 #include "Firework.h"
-
+float chance;
+float increase_chance = 0;
 //Particle p;
 //ofVec2f counter_force;
-vector<Firework> fireworks;
+
 //vector<int>::iterator the_iterator;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	ofBackground(255, 255, 255);
+	//ofSetBackgroundAuto(false);
+	//ofEnableAlphaBlending();
 	gravity = ofVec2f(0, 0.05f);
-/*	p.velocity.y = -5;
-	p.velocity.x = 3;
 
-	p.acceleration.y = p.velocity.y / -100;
-	Firework f = Firework(100, 100);
-	*/
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	int s = fireworks.size;
-	for (int i = 0; i < s; i++){
+	int s = fireworks.size();
+	for (int i = s - 1; i >= 0; i--){
 		fireworks.at(i).Update();
+		if (fireworks.at(i).particles.empty()) {
+			fireworks.erase(fireworks.begin() + i);
+		}
+	}
+
+	chance = ofRandom(0, 1000) + increase_chance;
+	if (chance > 999) {
+		increase_chance = 0;
+		int x = ofRandom(100, ofGetWindowWidth()-100);
+		int y = ofRandom(100, ofGetWindowHeight()-100);
+		fireworks.push_back(Firework(x, y));
+	}
+	else {
+		increase_chance += 1;
 	}
 	//p.ApplyForce(gravity);
 	//p.velocity += p.acceleration + gravity;
@@ -32,14 +45,23 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofBackground(0, 0, 0);
-	ofSetColor(255, 255, 255);
-	ofCircle(100 + p.position.x, 250 + p.position.y, 10);
-	/*
+	int s = fireworks.size();
+	for (int i = 0; i < s; i++) {
+		int sz = fireworks.at(i).particles.size();
+		Particle *p;
+		for (int j = 0; j < sz; j++) {
+			p = &fireworks.at(i).particles.at(j);
+			ofSetColor(p->red, p->green, p->blue , p->transparency);
+			ofCircle(p->position.x, p->position.y, 5);
+		}
+	}
+
+	ofSetColor(0, 0, 0);
 	std::stringstream strm;
-	strm << "FPS: " << ofGetFrameRate();
+    strm << "FPS: " << ofGetFrameRate() << endl;
+	strm << "cnt: " <<s;
 	ofDrawBitmapString(strm.str(), 20, 20);
-	*/
+	
 }
 
 //--------------------------------------------------------------
