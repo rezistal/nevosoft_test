@@ -1,26 +1,20 @@
 #include "Particle.h"
 #include "ofApp.h"
 
-Particle::Particle(int x, int y) {
-	position = ofVec2f(x, y);
+Particle::Particle(int x, int y, ofColor color) {
+	this->position = ofVec2f(x, y);
 	float t = ofRandom(0, TWO_PI);
-	float r = 0.5f;//ofRandom(0, 1);
-	float v = ofRandom(4, 8);
-	velocity = ofVec2f(r*cos(t)*v, r*sin(t)*v);
-	//acceleration.x = velocity.x / -100; //ofRandom(-100, -50);
-	//acceleration.y = velocity.y / -100; //ofRandom(-100, -50);
+	float r = 1;
+	float v = ofRandom(5, 10);
+	this->velocity = ofVec2f(r*cos(t)*v, r*sin(t)*v);
 
-	red = ofRandom(0, 256);
-	green = ofRandom(0, 256);
-	blue = ofRandom(0, 256);
+	this->red = color.r + (int)ofRandom(-20, 20);
+	this->green = color.g + (int)ofRandom(-20, 20);
+	this->blue = color.b + (int)ofRandom(-20, 20);
 
-	transparency = 400;
+	this->transparency = 400;
 
-	/*	p.velocity.y = -5;
-		p.velocity.x = 3;
-
-		p.acceleration.y = p.velocity.y / -100;
-		*/
+	this->slower = 5;
 }
 
 void Particle::ApplyForce(ofVec2f force) {
@@ -28,18 +22,26 @@ void Particle::ApplyForce(ofVec2f force) {
 
 }
 
-void Particle::Update() {
-	ofVec2f gravity = ofVec2f(0, 0.09f);
-	ofVec2f old_v = velocity;
-	velocity += acceleration;/*
-	if (old_v.x / velocity.x < 0) {
-		acceleration.x *= 0;
-	}
-	if (old_v.y / velocity.y < 0) {
-		acceleration.y *= 0;
-	}*/
-	velocity += gravity;
-	position += velocity;
+void Particle::draw() {
+	ofSetColor(this->red, this->green, this->blue, this->transparency);
+	ofCircle(this->position.x, this->position.y, 5);
+	ofSetColor(255, 255, 255);
+	ofCircle(this->position.x, this->position.y, 2);
+}
 
-	transparency -= (int)ofRandom(3, 5);
+void Particle::Update() {
+	ofVec2f gravity = ofVec2f(0, 0.4f);
+
+	if (this->slower >= 0) {
+		this->velocity *= 0.95f;
+		this->slower--;
+	}
+	else {
+		this->velocity += gravity;
+	}
+
+	//this->velocity += gravity;
+	this->position += this->velocity;
+	
+	this->transparency -= (int)ofRandom(5, 10);
 }

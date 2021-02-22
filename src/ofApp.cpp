@@ -1,8 +1,13 @@
 #include "ofApp.h"
-#include "Particle.h"
 #include "Firework.h"
+#include "GuiApp.h"
+
 float chance;
 float increase_chance = 0;
+int fireworks_count = 0;
+int particles_count = 0;
+
+
 //Particle p;
 //ofVec2f counter_force;
 
@@ -10,32 +15,49 @@ float increase_chance = 0;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	ofBackground(255, 255, 255);
+
+	this->gui.setup();
+
+	pause = 1;
+	ofSetFrameRate(120);
+	ofSetWindowTitle("Nevosoft fireworks!");
+	ofBackground(0, 0, 0);
 	//ofSetBackgroundAuto(false);
 	//ofEnableAlphaBlending();
+	//ofSetLineWidth(2);
 	gravity = ofVec2f(0, 0.05f);
 
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	int s = fireworks.size();
-	for (int i = s - 1; i >= 0; i--){
-		fireworks.at(i).Update();
-		if (fireworks.at(i).particles.empty()) {
-			fireworks.erase(fireworks.begin() + i);
-		}
-	}
+	this->gui.update();
 
-	chance = ofRandom(0, 1000) + increase_chance;
-	if (chance > 999) {
-		increase_chance = 0;
-		int x = ofRandom(100, ofGetWindowWidth()-100);
-		int y = ofRandom(100, ofGetWindowHeight()-100);
-		fireworks.push_back(Firework(x, y));
-	}
-	else {
-		increase_chance += 1;
+	if (pause == 1) {
+		int s = fireworks.size();
+		particles_count += s;
+		for (int i = s - 1; i >= 0; i--) {
+			fireworks.at(i).Update();
+			if (fireworks.at(i).done) {
+				fireworks.erase(fireworks.begin() + i);
+			}
+		}
+		if (this->gui.auto_fireworks) {
+			chance = ofRandom(0, 1000) + increase_chance;
+			if (chance > 999) {
+				increase_chance = 0;
+				int x = ofRandom(100, ofGetWindowWidth() - 100);
+				int y = ofRandom(100, ofGetWindowHeight() - 100);
+
+				fireworks.push_back(Firework(x, y));
+				fireworks_count += 1;
+
+			}
+			else {
+				increase_chance += 1;
+			}
+		}
+
 	}
 	//p.ApplyForce(gravity);
 	//p.velocity += p.acceleration + gravity;
@@ -45,28 +67,37 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+	this->gui.draw();
+
 	int s = fireworks.size();
+	
 	for (int i = 0; i < s; i++) {
 		int sz = fireworks.at(i).particles.size();
 		Particle *p;
 		for (int j = 0; j < sz; j++) {
 			p = &fireworks.at(i).particles.at(j);
-			ofSetColor(p->red, p->green, p->blue , p->transparency);
-			ofCircle(p->position.x, p->position.y, 5);
+			p->draw();
+			//ofSetColor(p->red, p->green, p->blue , p->transparency);
+			//ofCircle(p->position.x, p->position.y, 5);
 		}
 	}
 
-	ofSetColor(0, 0, 0);
+	ofSetColor(255, 255, 255);
 	std::stringstream strm;
-    strm << "FPS: " << ofGetFrameRate() << endl;
-	strm << "cnt: " <<s;
+	strm << "FPS: " << ofGetFrameRate() << endl;
+	strm << "Current cnt: " << s << endl;
+	strm << "Total fireworks cnt: " << fireworks_count << endl;
+	strm << "Total particles cnt: " << particles_count << endl;
 	ofDrawBitmapString(strm.str(), 20, 20);
 	
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+	// k для теста
+	if (key = 107) {
+		pause *= -1;
+	}
 }
 
 //--------------------------------------------------------------
@@ -86,7 +117,12 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-	fireworks.push_back(Firework(x, y));
+	if (pause == 1) {
+		Firework f = Firework(x, y);
+		fireworks.push_back(f);
+		particles_count += f.particles.size();
+		fireworks_count += 1;
+	}
 }
 
 //--------------------------------------------------------------

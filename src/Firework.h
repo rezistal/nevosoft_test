@@ -6,6 +6,7 @@ class Firework
 {
 
 	public:
+		bool done = false;
 		vector<Particle> particles;
 
 		Firework(int x, int y);

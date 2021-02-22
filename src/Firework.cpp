@@ -2,19 +2,32 @@
 
 Firework::Firework(int x, int y) {
 
-	int r = (int)ofRandom(2000, 3000);
+	int particles_amount = (int)ofRandom(50, 100);
 
-	for (int i = 0; i <= r; i++){
-		particles.push_back(Particle(x, y));
+	float red = ofRandom(0, 256);
+	float green = ofRandom(0, 256);
+	float blue = ofRandom(0, 256);
+	ofColor common_color = ofColor(red, green, blue);
+
+	for (int i = 0; i <= particles_amount; i++){
+		particles.push_back(Particle(x, y, common_color));
 	}
 }
 
 void Firework::Update() {
-	int s = particles.size();
-	for (int i = s - 1; i >= 0; i--) {
-		particles.at(i).Update();
-		if (particles.at(i).transparency < 0) {
-			particles.erase(particles.begin() + i);
+
+	int particles_amount = particles.size();
+	int transparent_particles = 0;
+	Particle *particle;
+
+	for (int i = particles_amount - 1; i >= 0; i--) {
+		particle = &particles.at(i);
+		particle->Update();
+		if (particle->transparency < 0) {
+			transparent_particles += 1;
 		}
+	}
+	if (transparent_particles == particles_amount) {
+		done = true;
 	}
 }
