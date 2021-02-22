@@ -2,12 +2,10 @@
 
 #include "ofMain.h"
 #include "Firework.h"
-#include "GuiApp.h"
 
 class ofApp : public ofBaseApp{
 
 	public:
-		GuiApp gui;
 
 		int pause;
 		ofVec2f gravity;

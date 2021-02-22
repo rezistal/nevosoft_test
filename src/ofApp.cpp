@@ -1,12 +1,13 @@
 #include "ofApp.h"
 #include "Firework.h"
-#include "GuiApp.h"
 
 float chance;
 float increase_chance = 0;
 int fireworks_count = 0;
 int particles_count = 0;
-
+ofImage img1;
+ofImage img2;
+ofImage *img_todraw;
 
 //Particle p;
 //ofVec2f counter_force;
@@ -15,9 +16,9 @@ int particles_count = 0;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-
-	this->gui.setup();
-
+	img1.loadImage("cat.png");
+	img2.loadImage("cat2.png");
+	img_todraw = &img1;
 	pause = 1;
 	ofSetFrameRate(120);
 	ofSetWindowTitle("Nevosoft fireworks!");
@@ -31,7 +32,6 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	this->gui.update();
 
 	if (pause == 1) {
 		int s = fireworks.size();
@@ -42,7 +42,7 @@ void ofApp::update(){
 				fireworks.erase(fireworks.begin() + i);
 			}
 		}
-		if (this->gui.auto_fireworks) {
+		if (true) {
 			chance = ofRandom(0, 1000) + increase_chance;
 			if (chance > 999) {
 				increase_chance = 0;
@@ -59,15 +59,10 @@ void ofApp::update(){
 		}
 
 	}
-	//p.ApplyForce(gravity);
-	//p.velocity += p.acceleration + gravity;
-	//p.position += p.velocity;
-	//p.acceleration *= 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	this->gui.draw();
 
 	int s = fireworks.size();
 	
@@ -89,12 +84,13 @@ void ofApp::draw(){
 	strm << "Total fireworks cnt: " << fireworks_count << endl;
 	strm << "Total particles cnt: " << particles_count << endl;
 	ofDrawBitmapString(strm.str(), 20, 20);
-	
+	img_todraw->draw(200, 200);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	// k для теста
+
 	if (key = 107) {
 		pause *= -1;
 	}
@@ -117,6 +113,14 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
+	if (x >= 200 && x <= 200 + img_todraw->getWidth()
+		&& y >= 200 && y <= 200 + img_todraw->getHeight()) {
+		img_todraw = &img2;
+	}
+	else {
+		img_todraw = &img1;
+	}
+	
 	if (pause == 1) {
 		Firework f = Firework(x, y);
 		fireworks.push_back(f);
