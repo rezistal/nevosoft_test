@@ -12,7 +12,7 @@ Particle::Particle(int x, int y, ofColor color) {
 	this->green = color.g + (int)ofRandom(-20, 20);
 	this->blue = color.b + (int)ofRandom(-20, 20);
 
-	this->transparency = 400;
+	this->transparency = 300;
 
 	this->slower = 5;
 }
@@ -43,5 +43,5 @@ void Particle::Update() {
 	//this->velocity += gravity;
 	this->position += this->velocity;
 	
-	this->transparency -= (int)ofRandom(5, 10);
+	this->transparency -= (int)ofRandom(1, 2);
 }

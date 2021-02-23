@@ -181,14 +181,18 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Button.cpp" />
     <ClCompile Include="src\Firework.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
+    <ClCompile Include="src\Parameter.cpp" />
     <ClCompile Include="src\Particle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Button.h" />
     <ClInclude Include="src\Firework.h" />
     <ClInclude Include="src\ofApp.h" />
+    <ClInclude Include="src\Parameter.h" />
     <ClInclude Include="src\Particle.h" />
   </ItemGroup>
   <ItemGroup>
