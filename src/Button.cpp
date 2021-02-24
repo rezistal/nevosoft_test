@@ -30,7 +30,7 @@ void Button::Draw() {
 }
 
 
-void Button::Click(int x, int y) {
+int Button::Click(int x, int y) {
 	if (x >= this->bx
 		&& x <= this->bx + this->button_image->getWidth()
 		&& y >= this->by
@@ -46,7 +46,9 @@ void Button::Click(int x, int y) {
 			}
 			
 			this->button_image_todraw = this->button_image_pressed;
+			return 1;
 	}
+	return 0;
 }
 
 void Button::Click_released(int x, int y) {

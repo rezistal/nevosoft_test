@@ -4,11 +4,7 @@ float chance;
 float increase_chance = 0;
 int fireworks_count = 0;
 int particles_count = 0;
-
-ofImage img1;
-ofImage img2;
-ofImage *img_todraw;
-
+int click_detector;
 
 Parameter<int> ptest;
 Parameter<int> ptest2;
@@ -17,49 +13,65 @@ ofApp::ofApp() {
 
 }
 
+bool ofApp::isGamePaused() {
+	if (this->param_pause == 1) {
+		return true;
+	}
+	return false;
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
-	img_button_up.loadImage("button_up.png");
-	img_button_up_pressed.loadImage("button_up_pressed.png");
-	img_button_down.loadImage("button_down.png");
-	img_button_down_pressed.loadImage("button_down_pressed.png");
-	img_button_pause.loadImage("pause.png");
-	img_button_pause_pressed.loadImage("pause_pressed.png");
+	//Инициализируем стартовые параметры
+	this->param_particles_in_firework = 50;
+	this->param_pause = -1;
+	this->param_gravity = 0.4f;
 
+	//Загружаем все картинки
+	this->img_button_up.loadImage("button_up.png");
+	this->img_button_up_pressed.loadImage("button_up_pressed.png");
+	this->img_button_down.loadImage("button_down.png");
+	this->img_button_down_pressed.loadImage("button_down_pressed.png");
+	this->img_button_pause.loadImage("pause.png");
+	this->img_button_pause_pressed.loadImage("pause_pressed.png");
 
-	this->inc_particles_in_firework = Button(&img_button_up, &img_button_down_pressed, 20, 60, Parameter<int>(&this->param_particles_in_firework, 1, 1, 1, 1, 1000));
-	this->dec_particles_in_firework = Button(&img_button_down, &img_button_down_pressed, 20, 90, Parameter<int>(&this->param_particles_in_firework, 1, -1, 1, 1, 1000));
+	this->img_pause_menu.loadImage("ask.png");
+
+	//Создаем кнопки
+	this->inc_particles_in_firework = Button(&img_button_up, &img_button_up_pressed, 20, 80, Parameter<int>(&this->param_particles_in_firework, 1, 1, 1, 1, 1000));
+	this->dec_particles_in_firework = Button(&img_button_down, &img_button_down_pressed, 80, 80, Parameter<int>(&this->param_particles_in_firework, 1, -1, 1, 1, 1000));
 	this->pause = Button(&img_button_pause, &img_button_pause_pressed, 20, 200, Parameter<int>(&this->param_pause, 0, 0, -1, -1, 1));
 
-	img1.loadImage("cat.png");
-	img2.loadImage("cat2.png");
-	img_todraw = &img1;
-	this->param_pause = 1;
-	ofSetFrameRate(120);
+	//Название окна
 	ofSetWindowTitle("Nevosoft fireworks!");
-	ofBackground(0, 0, 0);
+
+	//Цвет ночного неба
+	ofBackground(13, 7, 46);
+
 	//ofSetBackgroundAuto(false);
 	//ofEnableAlphaBlending();
-	//ofSetLineWidth(2);
-	gravity = ofVec2f(0, 0.05f);
-
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
-	if (this->param_pause == 1) {
+	if (!isGamePaused()) {
+
+		//Вычисляем движение всех частиц для каждого из фейрверков
 		int s = fireworks.size();
-		particles_count += s;
 		for (int i = s - 1; i >= 0; i--) {
-			fireworks.at(i).Update();
-			if (fireworks.at(i).done) {
+			Firework *f = &fireworks.at(i);
+			f->Update();
+			if (f->done) {
 				fireworks.erase(fireworks.begin() + i);
 			}
 		}
+
+		//Шанс создать в случайном месте фейрверк
+		//Если не создался - увеличиваем шанс создания
 		if (true) {
-			chance = ofRandom(0, 1000) + increase_chance;
-			if (chance > 999) {
+			chance = ofRandom(0, 10000) + increase_chance;
+			if (chance > 9999) {
 				increase_chance = 0;
 				int x = ofRandom(100, ofGetWindowWidth() - 100);
 				int y = ofRandom(100, ofGetWindowHeight() - 100);
@@ -78,6 +90,9 @@ void ofApp::update(){
 			}
 		}
 
+	}
+	else {
+		//OF_EXIT_APP(0);
 	}
 }
 
@@ -99,17 +114,20 @@ void ofApp::draw(){
 
 	ofSetColor(255, 255, 255);
 	std::stringstream strm;
-	strm << "FPS: " << ofGetFrameRate() << endl;
+	strm << "FPS: " << (int)ofGetFrameRate() << endl;
 	strm << "Current cnt: " << s << endl;
 	strm << "Total fireworks cnt: " << fireworks_count << endl;
 	strm << "Total particles cnt: " << particles_count << endl;
 	ofDrawBitmapString(strm.str(), 20, 20);
-	ofDrawBitmapString(this->param_particles_in_firework, 20, 40);
-	//img_todraw->draw(200, 200);
+	ofDrawBitmapString(this->param_particles_in_firework, 60, 100);
 
 	this->inc_particles_in_firework.Draw();
 	this->dec_particles_in_firework.Draw();
 	this->pause.Draw();
+
+	if (isGamePaused()) {
+		this->img_pause_menu.draw(0, 0);
+	}
 }
 
 //--------------------------------------------------------------
@@ -134,38 +152,24 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-	/*
-	int param_size = params.size();
-	for (int i = 0; i < param_size; i++) {
-		params.at(i)->Test();
+	click_detector = 0;
+
+	if (!isGamePaused()) {
+		click_detector += this->inc_particles_in_firework.Click(x, y);
+		click_detector += this->dec_particles_in_firework.Click(x, y);
+		click_detector += this->pause.Click(x, y);
 	}
 
-	if (this->inc_min_particles.Inside(x, y)) {
-		//this->min_particles++;
-	}
+	if (!isGamePaused() && click_detector == 0) {
 
-	if (this->dec_min_particles.Inside(x, y)) {
-		//this->min_particles--;
-	}
-	*/
-	this->inc_particles_in_firework.Click(x,y);
-	this->dec_particles_in_firework.Click(x,y);
-	this->pause.Click(x,y);
-
-	if (x >= 200 && x <= 200 + img_todraw->getWidth()
-		&& y >= 200 && y <= 200 + img_todraw->getHeight()) {
-		img_todraw = &img2;
-	}
-	else {
-		img_todraw = &img1;
-	}
-	/*
-	if (pause == 1) {
 		Firework f = Firework(x, y);
+		f.particles_amount = this->param_particles_in_firework;
+		f.Init_particles();
+
 		fireworks.push_back(f);
 		particles_count += f.particles_amount;
 		fireworks_count += 1;
-	}*/
+	}
 }
 
 //--------------------------------------------------------------

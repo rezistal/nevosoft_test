@@ -18,14 +18,14 @@ class Button
 		Parameter<float> app_param_float;
 		//Костыль что бы было понятно к какой переменной обращаться для изменения параметра
 		//Пока не понимаю как запихнуть параметры с разными шаблонами в одну переменную
-		//Или как обратиться к нужному заполненному аттрибуту для запуска метода 
+		//Или как обратиться к нужному заполненному аттрибуту для запуска нужного метода 
 		string bicycle;
 
 		Button();
 		Button(ofImage *img, ofImage *img_p, int x, int y, Parameter<int> p);
 		Button(ofImage *img, ofImage *img_p, int x, int y, Parameter<float> p);
 		
-		void Click(int x, int y);
+		int Click(int x, int y);
 		void Click_released(int x, int y);
 		void Draw();
 };

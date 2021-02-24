@@ -43,5 +43,5 @@ void Particle::Update() {
 	//this->velocity += gravity;
 	this->position += this->velocity;
 	
-	this->transparency -= (int)ofRandom(1, 2);
+	this->transparency -= (int)ofRandom(4, 6);
 }
