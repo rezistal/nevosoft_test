@@ -17,30 +17,33 @@ Particle::Particle(int x, int y, ofColor color) {
 	this->slower = 5;
 }
 
-void Particle::ApplyForce(ofVec2f force) {
-	this->acceleration += force;
-
+//Частица передает набор данных для своей отрисовки
+void Particle::Draw(int *red, int *green, int *blue, int *transparency, ofVec2f *position) {
+	*red = this->red;
+	*green = this->green;
+	*blue = this->blue;
+	*transparency = this->transparency;
+	*position = this->position;
 }
 
-void Particle::draw() {
+// Частица рисует саму себя
+void Particle::ofDraw() {
 	ofSetColor(this->red, this->green, this->blue, this->transparency);
 	ofCircle(this->position.x, this->position.y, 5);
 	ofSetColor(255, 255, 255);
 	ofCircle(this->position.x, this->position.y, 2);
 }
 
-void Particle::Update() {
-	ofVec2f gravity = ofVec2f(0, 0.4f);
+void Particle::Update(int gravity) {
 
 	if (this->slower >= 0) {
 		this->velocity *= 0.95f;
 		this->slower--;
 	}
 	else {
-		this->velocity += gravity;
+		this->velocity.y += ((float)gravity / 10);
 	}
 
-	//this->velocity += gravity;
 	this->position += this->velocity;
 	
 	this->transparency -= (int)ofRandom(4, 6);

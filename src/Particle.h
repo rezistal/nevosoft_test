@@ -16,8 +16,8 @@ class Particle
 		int slower; // Замедление
 
 		Particle(int x, int y, ofColor color);
-		void ApplyForce(ofVec2f force);
-		void draw();
-		void Update();
+		void ofDraw();
+		void Draw(int *red, int *green, int *blue, int *transparency, ofVec2f *position);
+		void Update(int gravity);
 };
 

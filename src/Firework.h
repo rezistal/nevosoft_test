@@ -5,14 +5,20 @@
 //Класс фейрверка в котором много частиц
 class Firework
 {
+	private:
+		int gravity;
+		int particles_amount;
 	public:
-		int particles_amount = 50;
 		ofVec2f center;
 		bool done = false;
 		vector<Particle> particles;
 
 		Firework(int x, int y);
-		void Init_particles();
+		void InitParticles();
+		void SetGravity(int gravity);
+		void SetParticlesAmount(int amount);
+		int GetParticlesAmount();
 		void Update();
+		void Draw();
 };
 
