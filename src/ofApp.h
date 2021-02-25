@@ -16,27 +16,19 @@ class ofApp : public ofBaseApp{
 
 		ofImage img_pause_menu;
 		ofImage img_button_resume;
-		ofImage img_button_resume_pressed;
 		ofImage img_button_exit;
 
 		ofImage img_sky;
 		ofImage img_window;
 		ofImage img_window_light;
 
-		int param_particles_in_firework;
-		Button inc_particles_in_firework;
-		Button dec_particles_in_firework;
-		
-		int param_pause;
-		Button pause;
-		Button pause_pressed;
-		Button btn_resume;
-		int param_exit;
 		Button btn_exit;
+		Button btn_resume;
 
+		int param_particles_in_firework;
 		int param_gravity;
-		Button inc_gravity;
-		Button dec_gravity;
+		int param_pause;
+		int param_exit;
 
 		vector<Firework> fireworks;
 
