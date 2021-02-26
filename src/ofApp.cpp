@@ -17,6 +17,7 @@ void ofApp::setup(){
 	//Инициализируем стартовые параметры
 	this->param_particles_in_firework = 50;
 	this->param_gravity = 3;
+	this->param_slow = 10;
 
 	this->app_param_pause = -1;
 	this->app_param_exit = -1;
@@ -45,15 +46,18 @@ void ofApp::setup(){
 
 	//Создаем кнопки
 	//Регулировки
+
 	this->buttons_layer0[0] = Button(&img_button_up, &img_button_up_pressed, 90, 80, Parameter<int>(&this->param_particles_in_firework, 1, 1, 1, 1, 1000));
 	this->buttons_layer0[1] = Button(&img_button_down, &img_button_down_pressed, 20, 80, Parameter<int>(&this->param_particles_in_firework, 1, -1, 1, 1, 1000));
 	this->buttons_layer0[2] = Button(&img_button_up, &img_button_up_pressed, 90, 130, Parameter<int>(&this->param_gravity, 1, 1, 1, 0, 9));
 	this->buttons_layer0[3] = Button(&img_button_down, &img_button_down_pressed, 20, 130, Parameter<int>(&this->param_gravity, 1, -1, 1, 0, 9));
+	this->buttons_layer0[4] = Button(&img_button_up, &img_button_up_pressed, 90, 180, Parameter<int>(&this->param_slow, 1, 1, 1, 1, 30));
+	this->buttons_layer0[5] = Button(&img_button_down, &img_button_down_pressed, 20, 180, Parameter<int>(&this->param_slow, 1, -1, 1, 1, 30));
 
 	//Меню пауза/выход
-	this->buttons_layer0[4] = Button(&img_button_pause, &img_button_pause_pressed, 20, 200, Parameter<int>(&this->app_param_pause, 0, 0, -1, -1, 1));
-	this->buttons_layer1[0] = Button(&img_button_resume, &img_button_resume, 320, 275, Parameter<int>(&this->app_param_pause, 0, 0, -1, -1, 1));
-	this->buttons_layer1[1] = Button(&img_button_exit, &img_button_exit, 420, 275, Parameter<int>(&this->app_param_exit, 0, 0, -1, -1, 1));
+	this->buttons_layer0[6] = Button(&img_button_pause, &img_button_pause_pressed, 20, 300, Parameter<int>(&this->app_param_pause, 0, 0, -1, -1, 1));
+	this->buttons_layer1[0] = Button(&img_button_resume, &img_button_resume, 290, 280, Parameter<int>(&this->app_param_pause, 0, 0, -1, -1, 1));
+	this->buttons_layer1[1] = Button(&img_button_exit, &img_button_exit, 390, 280, Parameter<int>(&this->app_param_exit, 0, 0, -1, -1, 1));
 
 	//Название окна
 	ofSetWindowTitle("Nevosoft fireworks!");
@@ -86,6 +90,7 @@ void ofApp::update(){
 
 				Firework f = Firework(x, y);
 				f.SetParticlesAmount(this->param_particles_in_firework);
+				f.SetSlow(this->param_slow);
 				f.InitParticles();
 
 				fireworks.push_back(f);
@@ -136,17 +141,19 @@ void ofApp::draw(){
 	ofDrawBitmapString(this->param_particles_in_firework, 65, 100);
 	ofDrawBitmapString("Gravity force:", 20, 120);
 	ofDrawBitmapString("0." + to_string(this->param_gravity), 60, 150);
+	ofDrawBitmapString("Slow:", 20, 175);
+	ofDrawBitmapString(this->param_slow, 65, 200);
 
 
 	//4 Слой: Рисуем кнопки
-	for (Button b : this->buttons_layer0) {
+	for (Button &b : this->buttons_layer0) {
 		b.Draw();
 	}
 
 	//5 Слой: Рисуем оверлэй паузы и кнопки
 	if (GamePaused()) {
 		this->img_pause_menu.draw(0, 0);
-		for (Button b : this->buttons_layer1) {
+		for (Button &b : this->buttons_layer1) {
 			b.Draw();
 		}
 	}
@@ -177,12 +184,12 @@ void ofApp::mousePressed(int x, int y, int button){
 	this->app_param_click_detector = 0;
 
 	if (!GamePaused()) {
-		for (Button b : this->buttons_layer0) {
+		for (Button &b : this->buttons_layer0) {
 			this->app_param_click_detector += b.Click(x, y);
 		}
 	}
 	else {
-		for (Button b : this->buttons_layer1) {
+		for (Button &b : this->buttons_layer1) {
 			this->app_param_click_detector += b.Click(x, y);
 		}
 	}
@@ -191,6 +198,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 		Firework f = Firework(x, y);
 		f.SetParticlesAmount(this->param_particles_in_firework);
+		f.SetSlow(this->param_slow);
 		f.InitParticles();
 
 		fireworks.push_back(f);
@@ -201,7 +209,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-	for (Button b : this->buttons_layer0) {
+	for (Button &b : this->buttons_layer0) {
 		b.Click_released(x, y);
 	}
 }

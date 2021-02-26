@@ -11,7 +11,11 @@ void Firework::InitParticles() {
 	ofColor common_color = ofColor(red, green, blue);
 
 	for (int i = 0; i <= this->particles_amount - 1; i++) {
-		this->particles.push_back(Particle(this->center.x, this->center.y, common_color));
+		Particle p = Particle(this->center.x, this->center.y);
+		p.SetColor(common_color);
+		p.SetSlow(this->slow);
+		p.InitParticle();
+		this->particles.push_back(p);
 	}
 }
 
@@ -25,6 +29,10 @@ int Firework::GetParticlesAmount() {
 
 void Firework::SetGravity(int gravity) {
 	this->gravity = gravity;
+}
+
+void Firework::SetSlow(int slow) {
+	this->slow = slow;
 }
 
 void Firework::Update() {

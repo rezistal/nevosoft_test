@@ -34,10 +34,10 @@ class ofApp : public ofBaseApp{
 
 		int param_particles_in_firework;
 		int param_gravity;
+		int param_slow;
 
-		Button buttons_layer0[5];
+		Button buttons_layer0[7];
 		Button buttons_layer1[2];
-
 		vector<Firework> fireworks;
 
 		ofApp();

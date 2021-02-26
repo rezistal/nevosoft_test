@@ -1,20 +1,27 @@
 #include "Particle.h"
 #include "ofApp.h"
 
-Particle::Particle(int x, int y, ofColor color) {
+Particle::Particle(int x, int y) {
 	this->position = ofVec2f(x, y);
+	
+}
+void Particle::SetColor(ofColor color) {
+	this->red = color.r + (int)ofRandom(-20, 20);
+	this->green = color.g + (int)ofRandom(-20, 20);
+	this->blue = color.b + (int)ofRandom(-20, 20);
+}
+
+void Particle::SetSlow(int slow) {
+	this->slower = slow;
+}
+
+void Particle::InitParticle() {
 	float t = ofRandom(0, TWO_PI);
 	float r = 1;
 	float v = ofRandom(5, 10);
 	this->velocity = ofVec2f(r*cos(t)*v, r*sin(t)*v);
-
-	this->red = color.r + (int)ofRandom(-20, 20);
-	this->green = color.g + (int)ofRandom(-20, 20);
-	this->blue = color.b + (int)ofRandom(-20, 20);
-
 	this->transparency = 300;
-
-	this->slower = 5;
+	this->slow_step = 5;
 }
 
 //„астица передает набор данных дл€ своей отрисовки
@@ -32,9 +39,9 @@ void Particle::ofDraw() {
 
 void Particle::Update(int gravity) {
 
-	if (this->slower >= 0) {
-		this->velocity *= 0.95f;
-		this->slower--;
+	if (this->slow_step >= 0) {
+		this->velocity *= 0.85f + (float)(30-this->slower) / 100;
+		this->slow_step--;
 	}
 	else {
 		this->velocity.y += ((float)gravity / 10);
