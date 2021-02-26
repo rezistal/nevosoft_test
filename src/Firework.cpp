@@ -47,9 +47,14 @@ void Firework::Update() {
 void Firework::Draw() {
 	for (int i = 0; i <= this->particles_amount - 1; i++) {
 		//this->particles.at(i).ofDraw();
+
+		//Не C++17? WTF
+		//auto [red, green, blue, transparency, position] = this->particles.at(i).Draw();
+
 		int red, green, blue, transparency;
 		ofVec2f position;
-		this->particles.at(i).Draw(&red, &green, &blue, &transparency, &position);
+		tie(red, green, blue, transparency, position) = this->particles.at(i).Draw();
+
 		ofSetColor(red, green, blue, transparency);
 		ofCircle(position.x, position.y, 5);
 		ofSetColor(255, 255, 255);

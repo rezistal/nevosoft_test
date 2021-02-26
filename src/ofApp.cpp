@@ -1,19 +1,11 @@
 #include "ofApp.h"
 
-float chance;
-float increase_chance = 0;
-int fireworks_count = 0;
-int particles_count = 0;
-int click_detector;
-
-multimap <string, Button> buttons;
-
 ofApp::ofApp() {
 
 }
 
 bool ofApp::GamePaused() {
-	if (this->param_pause == 1) {
+	if (this->app_param_pause == 1) {
 		return true;
 	}
 	return false;
@@ -24,9 +16,15 @@ void ofApp::setup(){
 	this->fireworks.reserve(20);
 	//Инициализируем стартовые параметры
 	this->param_particles_in_firework = 50;
-	this->param_pause = -1;
 	this->param_gravity = 3;
-	this->param_exit = -1;
+
+	this->app_param_pause = -1;
+	this->app_param_exit = -1;
+	this->app_param_chance = 0;
+	this->app_param_increase_chance = 0;
+	this->app_param_fireworks_count = 0;
+	this->app_param_particles_count = 0;
+
 
 	//Загружаем все картинки
 	this->img_button_up.loadImage("button_up.png");
@@ -47,24 +45,18 @@ void ofApp::setup(){
 
 	//Создаем кнопки
 	//Регулировки
-	buttons.insert(pair<string, Button>("mode1", Button(&img_button_up, &img_button_up_pressed, 90, 80, Parameter<int>(&this->param_particles_in_firework, 1, 1, 1, 1, 1000))));
-	buttons.insert(pair<string, Button>("mode1", Button(&img_button_down, &img_button_down_pressed, 20, 80, Parameter<int>(&this->param_particles_in_firework, 1, -1, 1, 1, 1000))));
-	buttons.insert(pair<string, Button>("mode1", Button(&img_button_up, &img_button_up_pressed, 90, 130, Parameter<int>(&this->param_gravity, 1, 1, 1, 0, 9))));
-	buttons.insert(pair<string, Button>("mode1", Button(&img_button_down, &img_button_down_pressed, 20, 130, Parameter<int>(&this->param_gravity, 1, -1, 1, 0, 9))));
+	this->buttons_layer0[0] = Button(&img_button_up, &img_button_up_pressed, 90, 80, Parameter<int>(&this->param_particles_in_firework, 1, 1, 1, 1, 1000));
+	this->buttons_layer0[1] = Button(&img_button_down, &img_button_down_pressed, 20, 80, Parameter<int>(&this->param_particles_in_firework, 1, -1, 1, 1, 1000));
+	this->buttons_layer0[2] = Button(&img_button_up, &img_button_up_pressed, 90, 130, Parameter<int>(&this->param_gravity, 1, 1, 1, 0, 9));
+	this->buttons_layer0[3] = Button(&img_button_down, &img_button_down_pressed, 20, 130, Parameter<int>(&this->param_gravity, 1, -1, 1, 0, 9));
 
 	//Меню пауза/выход
-	buttons.insert(pair<string, Button>("mode1", Button(&img_button_pause, &img_button_pause_pressed, 20, 200, Parameter<int>(&this->param_pause, 0, 0, -1, -1, 1))));
-	this->btn_resume = Button(&img_button_resume, &img_button_resume, 320, 275, Parameter<int>(&this->param_pause, 0, 0, -1, -1, 1));
-	this->btn_exit = Button(&img_button_exit, &img_button_exit, 420, 275, Parameter<int>(&this->param_exit, 0, 0, -1, -1, 1));
-	
+	this->buttons_layer0[4] = Button(&img_button_pause, &img_button_pause_pressed, 20, 200, Parameter<int>(&this->app_param_pause, 0, 0, -1, -1, 1));
+	this->buttons_layer1[0] = Button(&img_button_resume, &img_button_resume, 320, 275, Parameter<int>(&this->app_param_pause, 0, 0, -1, -1, 1));
+	this->buttons_layer1[1] = Button(&img_button_exit, &img_button_exit, 420, 275, Parameter<int>(&this->app_param_exit, 0, 0, -1, -1, 1));
+
 	//Название окна
 	ofSetWindowTitle("Nevosoft fireworks!");
-
-	//Цвет ночного неба
-	//ofBackground(13, 7, 46);
-
-	//ofSetBackgroundAuto(false);
-	//ofEnableAlphaBlending();
 }
 
 //--------------------------------------------------------------
@@ -86,9 +78,9 @@ void ofApp::update(){
 		//Шанс создать в случайном месте фейрверк
 		//Если не создался - увеличиваем шанс создания
 		if (true) {
-			chance = ofRandom(0, 10000) + increase_chance;
-			if (chance > 9999) {
-				increase_chance = 0;
+			this->app_param_chance = (int)ofRandom(0, 10000) + this->app_param_increase_chance;
+			if (this->app_param_chance > 9999) {
+				this->app_param_increase_chance = 0;
 				int x = ofRandom(100, ofGetWindowWidth() - 100);
 				int y = ofRandom(100, ofGetWindowHeight() - 100);
 
@@ -97,17 +89,17 @@ void ofApp::update(){
 				f.InitParticles();
 
 				fireworks.push_back(f);
-				particles_count += this->param_particles_in_firework;
-				fireworks_count += 1;
+				this->app_param_particles_count += this->param_particles_in_firework;
+				this->app_param_fireworks_count += 1;
 
 			}
 			else {
-				increase_chance += 1;
+				this->app_param_increase_chance += 1;
 			}
 		}
 
 	}
-	if(this->param_exit == 1) {
+	if(this->app_param_exit == 1) {
 		OF_EXIT_APP(0);
 	}
 }
@@ -137,33 +129,26 @@ void ofApp::draw(){
 	stringstream strm;
 	strm << "FPS: " << (int)ofGetFrameRate() << endl;
 	strm << "Current fireworks: " << s << endl;
-	strm << "Total fireworks: " << fireworks_count << endl;
-	strm << "Total particles: " << particles_count << endl;
+	strm << "Total fireworks: " << this->app_param_fireworks_count << endl;
+	strm << "Total particles: " << this->app_param_particles_count << endl;
 	strm << "Firework particles: " << endl;
 	ofDrawBitmapString(strm.str(), 20, 20);
 	ofDrawBitmapString(this->param_particles_in_firework, 65, 100);
 	ofDrawBitmapString("Gravity force:", 20, 120);
 	ofDrawBitmapString("0." + to_string(this->param_gravity), 60, 150);
 
-	bool draw_once = true;
+
 	//4 Слой: Рисуем кнопки
-	for (auto t = buttons.begin(); t != buttons.end(); ++t) {
-		if (t->first == "mode1" && !GamePaused()) {
-			t->second.Draw();
-		} else
-		if (GamePaused() && t->first == "mode2") {
-			if (draw_once) {
-				this->img_pause_menu.draw(0, 0);
-				draw_once != draw_once;
-			}
-			t->second.Draw();
-		}
+	for (Button b : this->buttons_layer0) {
+		b.Draw();
 	}
+
 	//5 Слой: Рисуем оверлэй паузы и кнопки
 	if (GamePaused()) {
 		this->img_pause_menu.draw(0, 0);
-		this->btn_resume.Draw();
-		this->btn_exit.Draw();
+		for (Button b : this->buttons_layer1) {
+			b.Draw();
+		}
 	}
 }
 
@@ -189,42 +174,35 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-	click_detector = 0;
+	this->app_param_click_detector = 0;
 
 	if (!GamePaused()) {
-		for (auto t = buttons.begin(); t != buttons.end(); ++t) {
-			if (t->first == "mode1" && !GamePaused()) {
-				click_detector += t->second.Click(x, y);
-			} else
-			if (t->first == "mode2" && GamePaused()) {
-				(void)t->second.Click(x, y);
-			}
+		for (Button b : this->buttons_layer0) {
+			this->app_param_click_detector += b.Click(x, y);
+		}
+	}
+	else {
+		for (Button b : this->buttons_layer1) {
+			this->app_param_click_detector += b.Click(x, y);
 		}
 	}
 
-	if (!GamePaused() && click_detector == 0) {
+	if (!GamePaused() && this->app_param_click_detector == 0) {
 
 		Firework f = Firework(x, y);
 		f.SetParticlesAmount(this->param_particles_in_firework);
 		f.InitParticles();
 
 		fireworks.push_back(f);
-		particles_count += this->param_particles_in_firework;
-		fireworks_count += 1;
+		this->app_param_particles_count += this->param_particles_in_firework;
+		this->app_param_fireworks_count += 1;
 	}
-	/*
-	if (GamePaused()) {
-		this->btn_resume.Click(x, y);
-		this->btn_exit.Click(x, y);
-	}*/
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-	for (auto t = buttons.begin(); t != buttons.end(); ++t) {
-		if (t->first == "mode1") {
-			 t->second.Click_released(x, y);
-		}
+	for (Button b : this->buttons_layer0) {
+		b.Click_released(x, y);
 	}
 }
 

@@ -18,12 +18,8 @@ Particle::Particle(int x, int y, ofColor color) {
 }
 
 //Частица передает набор данных для своей отрисовки
-void Particle::Draw(int *red, int *green, int *blue, int *transparency, ofVec2f *position) {
-	*red = this->red;
-	*green = this->green;
-	*blue = this->blue;
-	*transparency = this->transparency;
-	*position = this->position;
+tuple<int, int, int, int, ofVec2f> Particle::Draw() {
+	return make_tuple(this->red, this->green, this->blue, this->transparency, this->position);
 }
 
 // Частица рисует саму себя

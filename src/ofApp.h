@@ -6,6 +6,16 @@
 #include "Button.h"
 
 class ofApp : public ofBaseApp{
+	private:
+		int app_param_chance;
+		int app_param_increase_chance;
+		int app_param_pause;
+		int app_param_exit;
+		int app_param_click_detector;
+
+		int app_param_fireworks_count;
+		int app_param_particles_count;
+
 	public:
 		ofImage img_button_up;
 		ofImage img_button_up_pressed;
@@ -22,13 +32,11 @@ class ofApp : public ofBaseApp{
 		ofImage img_window;
 		ofImage img_window_light;
 
-		Button btn_exit;
-		Button btn_resume;
-
 		int param_particles_in_firework;
 		int param_gravity;
-		int param_pause;
-		int param_exit;
+
+		Button buttons_layer0[5];
+		Button buttons_layer1[2];
 
 		vector<Firework> fireworks;
 

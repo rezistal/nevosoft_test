@@ -17,7 +17,7 @@ class Particle
 
 		Particle(int x, int y, ofColor color);
 		void ofDraw();
-		void Draw(int *red, int *green, int *blue, int *transparency, ofVec2f *position);
+		tuple<int,int,int,int,ofVec2f> Draw();
 		void Update(int gravity);
 };
 
