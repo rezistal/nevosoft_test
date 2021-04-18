@@ -51,3 +51,7 @@ void Particle::Update(int gravity) {
 	
 	this->transparency -= (int)ofRandom(4, 6);
 }
+
+int Particle::GetTransparency() {
+	return this->transparency;
+}

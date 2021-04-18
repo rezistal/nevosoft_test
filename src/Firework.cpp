@@ -43,7 +43,7 @@ void Firework::Update() {
 	for (int i = this->particles_amount - 1; i >= 0; i--) {
 		particle = &this->particles.at(i);
 		particle->Update(this->gravity);
-		if (particle->transparency <= 0) {
+		if (particle->GetTransparency() <= 0) {
 			transparent_particles += 1;
 		}
 	}
@@ -68,4 +68,8 @@ void Firework::Draw() {
 		ofSetColor(255, 255, 255);
 		ofCircle(position.x, position.y, 2);
 	}
+}
+
+bool Firework::GetDone() {
+	return this->done;
 }

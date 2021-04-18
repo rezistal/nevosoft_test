@@ -9,11 +9,11 @@ class Firework
 		int gravity;
 		int particles_amount;
 		int slow;
-	public:
 		ofVec2f center;
 		bool done = false;
 		vector<Particle> particles;
 
+	public:
 		Firework(int x, int y);
 		void InitParticles();
 		void SetGravity(int gravity);
@@ -22,5 +22,6 @@ class Firework
 		int GetParticlesAmount();
 		void Update();
 		void Draw();
+		bool GetDone();
 };
 

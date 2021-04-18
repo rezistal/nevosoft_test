@@ -7,8 +7,6 @@
 
 class ofApp : public ofBaseApp{
 	private:
-		int app_param_chance;
-		int app_param_increase_chance;
 		int app_param_pause;
 		int app_param_exit;
 		int app_param_click_detector;
@@ -16,7 +14,7 @@ class ofApp : public ofBaseApp{
 		int app_param_fireworks_count;
 		int app_param_particles_count;
 
-	public:
+	
 		ofImage img_button_up;
 		ofImage img_button_up_pressed;
 		ofImage img_button_down;
@@ -40,7 +38,10 @@ class ofApp : public ofBaseApp{
 		Button buttons_layer1[2];
 		vector<Firework> fireworks;
 
-		ofApp();
+		//Стрелять 1 раз в global_timer секунд
+		float global_timer;
+		//Время timeDelta от 0 до global_timer
+		float timeDelta;
 
 		void setup();
 		void update();
@@ -59,5 +60,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 		bool GamePaused();
-		
+
+	public:
+		ofApp();
 };

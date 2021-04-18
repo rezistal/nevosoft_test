@@ -16,16 +16,16 @@ void ofApp::setup(){
 	this->fireworks.reserve(20);
 	//Инициализируем стартовые параметры
 	this->param_particles_in_firework = 50;
-	this->param_gravity = 3;
-	this->param_slow = 10;
+	this->param_gravity = 0;
+	this->param_slow = 30;
 
 	this->app_param_pause = -1;
 	this->app_param_exit = -1;
-	this->app_param_chance = 0;
-	this->app_param_increase_chance = 0;
 	this->app_param_fireworks_count = 0;
 	this->app_param_particles_count = 0;
 
+	this->global_timer = ofRandom(1, 2);
+	this->timeDelta = 0;
 
 	//Загружаем все картинки
 	this->img_button_up.loadImage("button_up.png");
@@ -46,18 +46,17 @@ void ofApp::setup(){
 
 	//Создаем кнопки
 	//Регулировки
-
-	this->buttons_layer0[0] = Button(&img_button_up, &img_button_up_pressed, 90, 80, Parameter<int>(&this->param_particles_in_firework, 1, 1, 1, 1, 1000));
-	this->buttons_layer0[1] = Button(&img_button_down, &img_button_down_pressed, 20, 80, Parameter<int>(&this->param_particles_in_firework, 1, -1, 1, 1, 1000));
-	this->buttons_layer0[2] = Button(&img_button_up, &img_button_up_pressed, 90, 130, Parameter<int>(&this->param_gravity, 1, 1, 1, 0, 9));
-	this->buttons_layer0[3] = Button(&img_button_down, &img_button_down_pressed, 20, 130, Parameter<int>(&this->param_gravity, 1, -1, 1, 0, 9));
-	this->buttons_layer0[4] = Button(&img_button_up, &img_button_up_pressed, 90, 180, Parameter<int>(&this->param_slow, 1, 1, 1, 1, 30));
-	this->buttons_layer0[5] = Button(&img_button_down, &img_button_down_pressed, 20, 180, Parameter<int>(&this->param_slow, 1, -1, 1, 1, 30));
+	this->buttons_layer0[0] = Button(&img_button_up, &img_button_up_pressed, 90, 80, Parameter(&this->param_particles_in_firework, 1, 1, 1, 1, 1000));
+	this->buttons_layer0[1] = Button(&img_button_down, &img_button_down_pressed, 20, 80, Parameter(&this->param_particles_in_firework, 1, -1, 1, 1, 1000));
+	this->buttons_layer0[2] = Button(&img_button_up, &img_button_up_pressed, 90, 130, Parameter(&this->param_gravity, 1, 1, 1, 0, 9));
+	this->buttons_layer0[3] = Button(&img_button_down, &img_button_down_pressed, 20, 130, Parameter(&this->param_gravity, 1, -1, 1, 0, 9));
+	this->buttons_layer0[4] = Button(&img_button_up, &img_button_up_pressed, 90, 180, Parameter(&this->param_slow, 1, 1, 1, 1, 30));
+	this->buttons_layer0[5] = Button(&img_button_down, &img_button_down_pressed, 20, 180, Parameter(&this->param_slow, 1, -1, 1, 1, 30));
 
 	//Меню пауза/выход
-	this->buttons_layer0[6] = Button(&img_button_pause, &img_button_pause_pressed, 20, 300, Parameter<int>(&this->app_param_pause, 0, 0, -1, -1, 1));
-	this->buttons_layer1[0] = Button(&img_button_resume, &img_button_resume, 290, 280, Parameter<int>(&this->app_param_pause, 0, 0, -1, -1, 1));
-	this->buttons_layer1[1] = Button(&img_button_exit, &img_button_exit, 390, 280, Parameter<int>(&this->app_param_exit, 0, 0, -1, -1, 1));
+	this->buttons_layer0[6] = Button(&img_button_pause, &img_button_pause_pressed, 20, 300, Parameter(&this->app_param_pause, 0, 0, -1, -1, 1));
+	this->buttons_layer1[0] = Button(&img_button_resume, &img_button_resume, 290, 280, Parameter(&this->app_param_pause, 0, 0, -1, -1, 1));
+	this->buttons_layer1[1] = Button(&img_button_exit, &img_button_exit, 390, 280, Parameter(&this->app_param_exit, 0, 0, -1, -1, 1));
 
 	//Название окна
 	ofSetWindowTitle("Nevosoft fireworks!");
@@ -74,35 +73,29 @@ void ofApp::update(){
 			Firework *f = &fireworks.at(i);
 			f->SetGravity(this->param_gravity);
 			f->Update();
-			if (f->done) {
+			if (f->GetDone()) {
 				fireworks.erase(fireworks.begin() + i);
 			}
 		}
 
-		//Шанс создать в случайном месте фейрверк
-		//Если не создался - увеличиваем шанс создания
-		if (true) {
-			this->app_param_chance = (int)ofRandom(0, 10000) + this->app_param_increase_chance;
-			if (this->app_param_chance > 9999) {
-				this->app_param_increase_chance = 0;
-				int x = ofRandom(100, ofGetWindowWidth() - 100);
-				int y = ofRandom(100, ofGetWindowHeight() - 100);
+		//Создать в случайном месте фейрверк один раз в интервал от 1 секунды до 2-х
+		this->timeDelta += ofGetLastFrameTime();
+		if (this->timeDelta >= this->global_timer) {
+			this->timeDelta = 0;
+			this->global_timer = ofRandom(1, 2);
 
-				Firework f = Firework(x, y);
-				f.SetParticlesAmount(this->param_particles_in_firework);
-				f.SetSlow(this->param_slow);
-				f.InitParticles();
+			int x = ofRandom(100, ofGetWindowWidth() - 100);
+			int y = ofRandom(100, ofGetWindowHeight() - 100);
 
-				fireworks.push_back(f);
-				this->app_param_particles_count += this->param_particles_in_firework;
-				this->app_param_fireworks_count += 1;
+			Firework f = Firework(x, y);
+			f.SetParticlesAmount(this->param_particles_in_firework);
+			f.SetSlow(this->param_slow);
+			f.InitParticles();
 
-			}
-			else {
-				this->app_param_increase_chance += 1;
-			}
+			fireworks.push_back(f);
+			this->app_param_particles_count += this->param_particles_in_firework;
+			this->app_param_fireworks_count += 1;
 		}
-
 	}
 	if(this->app_param_exit == 1) {
 		OF_EXIT_APP(0);
@@ -143,7 +136,7 @@ void ofApp::draw(){
 	ofDrawBitmapString("0." + to_string(this->param_gravity), 60, 150);
 	ofDrawBitmapString("Slow:", 20, 175);
 	ofDrawBitmapString(this->param_slow, 65, 200);
-
+	
 
 	//4 Слой: Рисуем кнопки
 	for (Button &b : this->buttons_layer0) {
